@@ -482,7 +482,7 @@ class AdbUtils(object):
         def _swipUnlock():
             def _formatNumber(string):
                 return int(string.strip().replace('\n',''),base=16)
-            with open('./utils/unlock.txt', 'r') as f:
+            with open('./data/unlock.txt', 'r') as f:
                 for line in f.readlines(): 
                     numbers = line.strip().split(' ')
                     self.shell("sendevent /dev/input/event1 %s %s %s" % (_formatNumber(numbers[0]),_formatNumber(numbers[1]),_formatNumber(numbers[2])))
