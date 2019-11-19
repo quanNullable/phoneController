@@ -26,6 +26,17 @@ def remove_cache(*filePaths):
             # print('删除文件:%s'%filePath)
             os.remove(filePath)
 
+def remove_dir(dirPath):
+    """
+    删除缓存文件夹
+    :return:
+    """
+    for i in os.listdir(dirPath) :# os.listdir(path_data)#返回一个列表，里面是当前目录下面的所有东西的相对路径
+        file_data = dirPath + "\\" + i#当前文件夹的下面的所有东西的绝对路径
+        if os.path.isfile(file_data) == True:#os.path.isfile判断是否为文件,如果是文件,就删除.如果是文件夹.递归给del_file.
+            os.remove(file_data)
+        else:
+            remove_dir(file_data)
 
 def del_folder(path):
     """

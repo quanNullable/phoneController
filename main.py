@@ -2,62 +2,73 @@
 # encoding: utf-8
 
 from airtest.core.api import *
-from poco.exceptions import PocoNoSuchNodeException
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
-from utils.file_utils import *
-from utils.string_utils import *
-from utils.device_utils import *
-from utils.airtest_utils import *
-from utils.image_utils import *
+from utils.key_code import *
 from utils.adb_utils import AdbUtils
-from queue import Queue
-import datetime
+from utils.device_utils import *
+from utils.file_utils import *
 from Ids import *
-import time
 
 
 # -----------------手淘App--------------------------------
-package_name = 'com.taobao.taobao'
-activity = 'com.taobao.tao.welcome.Welcome'
+package_name = 'com.small.target'
+activity = 'com.admin.module.view.activity.index.LoadingActivity'
+# activity = '.WelcomeActivity'
 
 
 # -------------------------------------------------
 
-# -----------------知乎App--------------------------------
-# package_name = 'com.zhihu.android'
-# activity = '.app.ui.activity.LauncherActivity'
-# -------------------------------------------------
 
 
-class TaoBao(object):
+class SmallTarget(object):
 
-    def __init__(self, key, *args):
+    def __init__(self):
         self.poco = AndroidUiautomationPoco(screenshot_each_action=False)
         self.adb = AdbUtils()
         auto_setup(__file__)
 
     def run(self):
-
-        # 1、准备工作,打开淘宝客户端
         self.__pre()
         sleep(5)
+        # self.__search_good_by_key()
         # exec_cmd('open %s' % get_screenshot_pic())
-        # adb.startWebpage("http://www.baidu.com")
-        # adb.callPhone(18671717521)
+        self.adb.sendKeyEvent(POWER)
+        self.poco.stop_running()
 
     def __pre(self):
         """
         准备工作
         :return:
         """
+        if not self.adb.isInstall(package_name):
+            print('未安装{},无法执行'.format(package_name))
+            return
         #解锁手机
         self.adb.unlockPhone()
         # 删除缓存文件
-        remove_cache('./part.jpg', './screenshot.png', './uidump.xml')
+        remove_dir('./temp/')
         home()
         stop_app(package_name)
         start_target_app(package_name, activity)
 
+
+    def __search_good_by_key(self):
+        """
+        通过关键字搜索商品
+        :return:
+        """
+        self.poco(id_page_main_button_search).wait(5).click()
+        # perform_view_id_click(poco, id_page_main_button_search)
+        perform_view_input(self.poco, id_page_search_edittext_search, self.key)
+
+        # 点击搜索
+        self.poco(id_page_search_button_search).wait_for_appearance()
+        while self.poco(id_page_search_button_search).exists():
+            print('点击一次搜索')
+            perform_view_id_click(self.poco, id_page_search_button_search)
+
+        # 等待列表加载出来
+        self.poco(id_page_goods_rv).wait_for_appearance()
 
     def __swipe(self, up_or_down):
         """
@@ -71,5 +82,4 @@ class TaoBao(object):
             self.poco.swipe([0.5, 0.4], [0.5, 0.8], duration=0.2)
 
 if __name__ == '__main__':
-    taobao = TaoBao('小米')
-    taobao.run()
+    SmallTarget().run()

@@ -53,6 +53,19 @@ class AdbUtils(object):
         获取设备状态： offline | bootloader | device
         """
         return self.adb("get-state").stdout.read().strip()
+    
+    def isDeviceLocked(self):
+        """
+        获取设备是否解锁： true | false 
+        """
+        return 'isStatusBarKeyguard=true' in self.shell("dumpsys window policy |{} isStatusBarKeyguard".format(find_util)).stdout.read().strip().decode('utf-8')
+
+    def isScreenOn(self):
+        """
+        获取设备是否亮屏： true | false 
+        """
+        return 'mScreenOnFully=true' in self.shell("dumpsys window policy |{} mScreenOnFully".format(find_util)).stdout.read().strip().decode('utf-8')
+
 
     def getDeviceID(self):
         """
@@ -218,7 +231,7 @@ class AdbUtils(object):
         """
         thirdApp = []
         for packages in self.shell("pm list packages -3").stdout.readlines():
-            thirdApp.append(packages.split(":")[-1].splitlines()[0])
+            thirdApp.append(packages.decode('utf-8').split(":")[-1].splitlines()[0])
 
         return thirdApp
 
@@ -229,7 +242,7 @@ class AdbUtils(object):
         """
         matApp = []
         for packages in self.shell("pm list packages %s" % keyword).stdout.readlines():
-            matApp.append(packages.split(":")[-1].splitlines()[0])
+            matApp.append(packages.decode('utf-8').split(":")[-1].splitlines()[0])
 
         return matApp
 
@@ -472,7 +485,13 @@ class AdbUtils(object):
         sleep(0.5)
 
     def unlockPhone(self):
-        self.shell("input keyevent %s" % POWER)
+        if self.isScreenOn():#亮屏
+            print('设备已亮屏')
+            if not self.isDeviceLocked():#已解锁
+                print('设备已解锁')
+                return
+        else:
+            self.sendKeyEvent(POWER)
         self.swipeToUp()
         def _numberNulock():
             self.touch(x=550,y=1500)
