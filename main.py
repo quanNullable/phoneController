@@ -21,13 +21,20 @@ FOLLOW_MONEY = 5.0#值得围观的钱数
 class SmallTarget(object):
 
     def __init__(self):
-        self.poco = AndroidUiautomationPoco(screenshot_each_action=False)
-        self.adb = AdbUtils()
+        try:
+            self.poco = AndroidUiautomationPoco(screenshot_each_action=False)
+            self.adb = AdbUtils()
+            auto_setup(__file__)
+            self.connected=True
+        except:
+            self.connected=False
         self.readCount=0
         self.money=0
-        auto_setup(__file__)
 
     def run(self):
+        if not self.connected:
+            print('连接设备失败,无法执行')
+            return
         self._pre()
         self._go_to_message_list()
         self._exit()
@@ -60,7 +67,7 @@ class SmallTarget(object):
         """
         self.poco(id_page_message_tab).wait(1).click()
         get_screenshot_pic('temp/{}.png'.format(int(time.time())))
-        if not self.poco(id_page_unread_message_num).exists():#有未读新消息
+        if self.poco(id_page_unread_message_num).exists():#有未读新消息
             perform_view_id_click(self.poco, id_page_my_message_btn)
              # 等待列表加载出来
             self.poco(id_page_my_follow_message_list).wait_for_appearance()
