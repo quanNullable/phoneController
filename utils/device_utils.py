@@ -132,12 +132,12 @@ def get_element_center_position(poco, bound):
 def get_clipboard_content():
     return  exec_cmd('adb shell am broadcast -a clipper.get')[1]
 
-def get_screenshot_pic():
+def get_screenshot_pic(path='./screenshot.png'):
         """
         拿到截图界面
         :return:
         """
-        screenshot_pic_result = './screenshot.png'
+        screenshot_pic_result = path
 
         # 截取手机当前屏幕
         exec_cmd('adb shell /system/bin/screencap -p /sdcard/screenshot.png')

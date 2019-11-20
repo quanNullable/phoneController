@@ -45,7 +45,6 @@ class AdbUtils(object):
     # adb shell命令
     def shell(self, args):
         cmd = "%s %s shell %s" % (command, self.device_id, str(args))
-        print(cmd)
         return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def getDeviceState(self):
@@ -494,10 +493,10 @@ class AdbUtils(object):
             self.sendKeyEvent(POWER)
         self.swipeToUp()
         def _numberNulock():
-            self.touch(x=550,y=1500)
-            self.touch(x=550,y=1500)
-            self.touch(x=550,y=1500)
-            self.touch(x=550,y=1500)
+            self.touch(x=520,y=1250)
+            self.touch(x=520,y=1250)
+            self.touch(x=520,y=1250)
+            self.touch(x=520,y=1250)
         def _swipUnlock():
             def _formatNumber(string):
                 return int(string.strip().replace('\n',''),base=16)
@@ -509,7 +508,7 @@ class AdbUtils(object):
             self.shell("sendevent /dev/input/event1 0 0 0" )
             
         sleep(1)
-        _swipUnlock()
+        _numberNulock()
         # self.swipeByCoord(250 ,1350, 860 ,1350)
         # self.swipeByCoord(860 ,1350, 860 ,2000)
 
